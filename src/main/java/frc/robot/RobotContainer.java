@@ -46,7 +46,7 @@ import java.util.List;
 public class RobotContainer {
   // The robot's subsystems
   private final DriveSubsystem m_robotDrive = new DriveSubsystem();
-  private final Elevator m_Elevator = new Elevator(Constants.ElevatorConstants.kLeftSparkmax, Constants.ElevatorConstants.kRightSparkmax);
+  private final Elevator m_Elevator = new Elevator(31, 30);
   private final Arm m_Arm = new Arm(Constants.ArmConstants.kArmTalonSRX);
   private final Intake m_Intake = new Intake(Constants.ArmConstants.kIntakeSparkmax);
 
@@ -60,6 +60,8 @@ public class RobotContainer {
   public RobotContainer() {
     // Configure the button bindings
     configureButtonBindings();
+
+    // m_Elevator.setPosition(1);
 
     // Configure default commands
     m_robotDrive.setDefaultCommand(

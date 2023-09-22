@@ -31,8 +31,8 @@ public final class Constants {
   }
 
   public static class ElevatorConstants {
-    public static final int kLeftSparkmax = 30;
-    public static final int kRightSparkmax = 31;
+    public static final int kLeftSparkmax = 31;
+    public static final int kRightSparkmax = 30;
     public static final double kElevatorMax = 12.75;
     public static final double kCubeMid = 8.75;
   }
