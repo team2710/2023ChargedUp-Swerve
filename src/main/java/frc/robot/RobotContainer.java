@@ -23,6 +23,7 @@ import frc.robot.Constants.OIConstants;
 import frc.robot.commands.ArmMoveCommand;
 import frc.robot.commands.ElevatorMoveCommand;
 import frc.robot.commands.IntakeCommand;
+import frc.robot.commands.ShiftCommand;
 import frc.robot.commands.ZeroArm;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.DriveSubsystem;
@@ -55,14 +56,27 @@ public class RobotContainer {
   CommandPS4Controller m_driverController = new CommandPS4Controller(OIConstants.kDriverControllerPort);
   CommandPS4Controller m_AuxController = new CommandPS4Controller(OIConstants.kAuxControllerPort);
 
+  // Aux Controller Triggers
+  final Trigger auxR1 = m_AuxController.R1(); // Cube
+  final Trigger auxR2 = m_AuxController.R2(); // Cone
+  final Trigger auxL2 = m_AuxController.L2(); // Elevator Down
+  final Trigger auxSquare = m_AuxController.square(); // Cone Outtake
+  final Trigger auxTriangle = m_AuxController.triangle(); // Cone Intake
+  final Trigger auxDPADU = m_AuxController.povUp(); // Elevator High
+  final Trigger auxDPADD = m_AuxController.povDown(); // Ground Pickup/Hybrid
+
+  // Driver Controller Triggers
+  final Trigger driveCross = m_driverController.cross();
+  final Trigger driveDPADD = m_driverController.povDown();
+
+  boolean controlShifted = false;
+
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
   public RobotContainer() {
     // Configure the button bindings
     configureButtonBindings();
-
-    // m_Elevator.setPosition(1);
 
     // Configure default commands
     m_robotDrive.setDefaultCommand(
@@ -78,6 +92,10 @@ public class RobotContainer {
     m_robotDrive.zeroHeading();
   }
 
+  public boolean getIsControlShifted() {
+    return controlShifted;
+  }
+
   /**
    * Use this method to define your button->command mappings. Buttons can be
    * created by
@@ -87,49 +105,24 @@ public class RobotContainer {
    * passing it to a
    * {@link JoystickButton}.
    */
-  private void configureButtonBindings() {
-    // new JoystickButton(m_driverController, Button.kR1.value)
-    //     .whileTrue(new RunCommand(
-    //         () -> m_robotDrive.setX(),
-    //         m_robotDrive));
+  private void configureButtonBindings() { // controls
+    // Zero swerve
+    driveCross.onTrue(new RunCommand(() -> m_robotDrive.zeroHeading(), m_robotDrive));
+    driveDPADD.onTrue(new ZeroArm(m_Arm));
 
-    Trigger rightBumper = m_AuxController.R1();
-    Trigger leftBumper = m_AuxController.L1();
-    rightBumper.onTrue(new ElevatorMoveCommand(m_Elevator, Constants.ElevatorConstants.kElevatorMax)
-            // .alongWith(new DriveCommand(drivetrain, driverController, 2))
-            .alongWith(new ArmMoveCommand(m_Arm, 5250)));
-        leftBumper.onTrue(new ElevatorMoveCommand(m_Elevator, 0)
-            .andThen(new WaitCommand(0.5))
-            .alongWith(new ArmMoveCommand(m_Arm, 0)));
+    auxDPADD.onTrue(new ArmMoveCommand(m_Arm, Constants.ArmConstants.kGroundIntake)); // Ground Pickup
+    auxL2.onTrue(new ElevatorMoveCommand(m_Elevator, 0) // Elevator Down
+      .andThen(new WaitCommand(0.5))
+      .alongWith(new ArmMoveCommand(m_Arm, 0)));
 
-    Trigger crossButton = m_AuxController.cross();
-    crossButton.onTrue(new ArmMoveCommand(m_Arm, 0));
+    auxTriangle.onTrue(new IntakeCommand(m_Intake, 25, Constants.ArmConstants.kIntake)).onFalse(new IntakeCommand(m_Intake, 5, Constants.ArmConstants.kIntakeHold)); // Cone Intake
+    auxSquare.onTrue(new IntakeCommand(m_Intake, 25, Constants.ArmConstants.KOuttake)).onFalse(new IntakeCommand(m_Intake, 0, 0)); // Cone Outtake
 
-    Trigger driverPovDown = m_driverController.povDown();
-    driverPovDown.onTrue(new ZeroArm(m_Arm));
+    auxDPADU.onTrue(new ElevatorMoveCommand(m_Elevator, Constants.ElevatorConstants.kElevatorMax).alongWith(new ArmMoveCommand(m_Arm, Constants.ArmConstants.kArmMax))); // 
 
-    Trigger yButton = m_AuxController.triangle();
-    Trigger xButton = m_AuxController.square();
-    Trigger povDownButton = m_AuxController.povDown();
-    yButton.onTrue(new IntakeCommand(m_Intake, 25, Constants.ArmConstants.kIntake))
-        .onFalse(new IntakeCommand(m_Intake, 5, Constants.ArmConstants.kIntakeHold));
-    xButton.onTrue(new IntakeCommand(m_Intake, 25, Constants.ArmConstants.KOuttake * -1))
-        .onFalse(new IntakeCommand(m_Intake, 25, 0));
-    povDownButton.onTrue(new IntakeCommand(m_Intake, 25, 0));
-
-    Trigger rightButtonTrigger = m_AuxController.povLeft();
-    rightButtonTrigger.onTrue(new ArmMoveCommand(m_Arm, 2000));
-
-    Trigger povRightButton = m_AuxController.povRight();
-    povRightButton.onTrue(new ElevatorMoveCommand(m_Elevator, Constants.ElevatorConstants.kCubeMid)
-            // .alongWith(new DriveCommand(drivetrain, driverController, 2))
-        .alongWith(new ArmMoveCommand(m_Arm, 4500)));
-
-        // Trigger bButton = auxController.b();
-    Trigger circleButton = m_AuxController.circle();
-    circleButton.onTrue(new ElevatorMoveCommand(m_Elevator, Constants.ElevatorConstants.kCubeMid+1)
-                // .alongWith(new DriveCommand(drivetrain, driverController, 2))
-        .alongWith(new ArmMoveCommand(m_Arm, 5250)));
+    auxR1.onTrue(new ElevatorMoveCommand(m_Elevator, Constants.ElevatorConstants.kConeMid).alongWith(new ArmMoveCommand(m_Arm, Constants.ArmConstants.kConeMid))
+    ); // Cone Mid
+    auxR2.onTrue(new ElevatorMoveCommand(m_Elevator, Constants.ElevatorConstants.kCubeMid).alongWith(new ArmMoveCommand(m_Arm, Constants.ArmConstants.kArmMax))); // Cube Mid
   }
 
   /**

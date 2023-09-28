@@ -9,3 +9,4 @@ public class CubeMidAuto extends SequentialCommandGroup {
         );
     }
 }
+
