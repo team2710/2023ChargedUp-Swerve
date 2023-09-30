@@ -26,6 +26,7 @@ import frc.robot.commands.IntakeCommand;
 import frc.robot.commands.ShiftCommand;
 import frc.robot.commands.ZeroArm;
 import frc.robot.commands.Auto.Auto3PieceSmooth;
+import frc.robot.commands.Auto.TestPath;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.Elevator;
@@ -155,6 +156,7 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    return new Auto3PieceSmooth(m_autoBuilder, m_robotDrive, m_Arm, m_Elevator, m_Intake);
+    // return new Auto3PieceSmooth(m_autoBuilder, m_robotDrive, m_Arm, m_Elevator, m_Intake);
+    return new TestPath(m_autoBuilder, m_robotDrive, m_Arm, m_Elevator, m_Intake);
   }
 }
