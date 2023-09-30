@@ -4,7 +4,9 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Intake extends SubsystemBase {
@@ -46,5 +48,9 @@ public class Intake extends SubsystemBase {
 
     public double getMotorTemperature() {
         return m_IntakeSparkMax.getMotorTemperature();
+    }
+
+    public Command intakeCommand(double speed) {
+        return Commands.runOnce(() -> setSpeed(speed), this);
     }
 }

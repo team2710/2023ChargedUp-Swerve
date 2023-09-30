@@ -6,6 +6,8 @@ import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
@@ -63,5 +65,9 @@ public class Arm extends SubsystemBase {
 
     public void setSpeed(double speed) {
         m_ArmTalonSRX.set(ControlMode.PercentOutput, speed, DemandType.ArbitraryFeedForward, 0.05 * Math.sin(Math.toRadians(getAngle())));
+    }
+
+    public Command moveCommand(double setpoint) {
+        return Commands.runOnce(() -> setPosition(setpoint), this);
     }
 }

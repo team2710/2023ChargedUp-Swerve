@@ -1,6 +1,8 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
@@ -59,5 +61,9 @@ public class Elevator extends SubsystemBase {
 
     public double getEncoderValue() {
         return m_Encoder.getPosition();
+    }
+
+    public Command moveCommand(double height) {
+        return Commands.runOnce(() -> setPosition(height), this);
     }
 }
