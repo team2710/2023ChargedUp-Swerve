@@ -27,7 +27,7 @@ public final class Constants {
   public static class OperatorConstants {
     public static final int kDriverControllerPort = 0;
     public static final int kAuxControllerPort = 1;
-    public static final double kControllerDeadzone = 0.01;
+    public static final double kControllerDeadzone = 0.1;
   }
 
   public static class ElevatorConstants {
@@ -45,13 +45,14 @@ public final class Constants {
     public static final int kIntakeSparkmax = 5;
     public static final double kIntakeHold = 0.07;
     public static final double kIntake = 0.5;
-    public static final double KOuttake = -0.75;
+    public static final double kOuttake = -0.75;
     public static final double kStartingAngle = 15; // degrees
     public static final double kMaxIntakeMotorTemperature = 32;
     public static final double kArmMax = 5250;
     public static final double kCubeMid = 4500;
     public static final double kConeMid = 4500;
-    public static final double kGroundIntake = 1400;
+    public static final double kGroundIntake = 1550;
+    public static final double kHybridCone = 2500;
   }
 
   public static final class DriveConstants {
@@ -153,7 +154,7 @@ public final class Constants {
   public static final class OIConstants {
     public static final int kDriverControllerPort = 0;
     public static final int kAuxControllerPort = 1;
-    public static final double kDriveDeadband = 0.05;
+    public static final double kDriveDeadband = 0.1;
   }
 
   public static final class AutoConstants {

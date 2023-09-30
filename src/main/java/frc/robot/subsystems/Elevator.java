@@ -5,6 +5,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.commands.ElevatorMoveCommand;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
@@ -64,6 +65,6 @@ public class Elevator extends SubsystemBase {
     }
 
     public Command moveCommand(double height) {
-        return Commands.runOnce(() -> setPosition(height), this);
+        return new ElevatorMoveCommand(this, height);
     }
 }

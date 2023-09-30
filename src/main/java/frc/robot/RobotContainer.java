@@ -17,8 +17,10 @@ import edu.wpi.first.wpilibj.PS4Controller;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.PS4Controller.Button;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.Constants.ArmConstants;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
+import frc.robot.Constants.ElevatorConstants;
 import frc.robot.Constants.OIConstants;
 import frc.robot.commands.ArmMoveCommand;
 import frc.robot.commands.ElevatorMoveCommand;
@@ -32,6 +34,7 @@ import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.Intake;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
@@ -74,6 +77,7 @@ public class RobotContainer {
   final Trigger auxTriangle = m_AuxController.triangle(); // Cone Intake
   final Trigger auxDPADU = m_AuxController.povUp(); // Elevator High
   final Trigger auxDPADD = m_AuxController.povDown(); // Ground Pickup/Hybrid
+  final Trigger auxDPADR = m_AuxController.povRight(); // Hybrid Cone
 
   // Driver Controller Triggers
   final Trigger driveCross = m_driverController.cross();
@@ -83,7 +87,39 @@ public class RobotContainer {
 
   final List<PathPlannerTrajectory> m_auto3pieceSmooth = PathPlanner.loadPathGroup("3 Piece Smooth", new PathConstraints(4.8, 5));
 
-  final HashMap<String, Command> eventMap = new HashMap<>();
+  final HashMap<String, Command> eventMap = new HashMap<>(){{
+    put("ground_intake", 
+      Commands.sequence(
+        m_Arm.moveCommand(ArmConstants.kGroundIntake),
+        m_Intake.intakeCommand(25, ArmConstants.kIntake)
+      )
+    );
+
+    put("intake_hold",
+      Commands.sequence(
+        m_Intake.intakeCommand(5, ArmConstants.kIntakeHold)
+      )
+    );
+
+    put("cone_outtake",
+      Commands.sequence(
+        m_Intake.intakeCommand(5, ArmConstants.kIntakeHold)
+      )
+    );
+
+    put("cone_mid",
+      Commands.sequence(
+        m_Elevator.moveCommand(ElevatorConstants.kConeMid),
+        m_Arm.moveCommand(ArmConstants.kConeMid),
+        Commands.waitSeconds(1),
+        m_Intake.intakeCommand(25, ArmConstants.kOuttake),
+        Commands.waitSeconds(1),
+        m_Intake.intakeCommand(0, 0),
+        m_Elevator.moveCommand(0),
+        m_Arm.moveCommand(0)
+      )
+    );
+  }};
 
   final SwerveAutoBuilder m_autoBuilder = new SwerveAutoBuilder(
       m_robotDrive::getPose,
@@ -141,9 +177,10 @@ public class RobotContainer {
       .alongWith(new ArmMoveCommand(m_Arm, 0)));
 
     auxTriangle.onTrue(new IntakeCommand(m_Intake, 25, Constants.ArmConstants.kIntake)).onFalse(new IntakeCommand(m_Intake, 5, Constants.ArmConstants.kIntakeHold)); // Cone Intake
-    auxSquare.onTrue(new IntakeCommand(m_Intake, 25, Constants.ArmConstants.KOuttake)).onFalse(new IntakeCommand(m_Intake, 0, 0)); // Cone Outtake
+    auxSquare.onTrue(new IntakeCommand(m_Intake, 25, Constants.ArmConstants.kOuttake)).onFalse(new IntakeCommand(m_Intake, 0, 0)); // Cone Outtake
 
     auxDPADU.onTrue(new ElevatorMoveCommand(m_Elevator, Constants.ElevatorConstants.kElevatorMax).alongWith(new ArmMoveCommand(m_Arm, Constants.ArmConstants.kArmMax))); // 
+    auxDPADR.onTrue(new ArmMoveCommand(m_Arm, ArmConstants.kHybridCone));
 
     auxR1.onTrue(new ElevatorMoveCommand(m_Elevator, Constants.ElevatorConstants.kConeMid).alongWith(new ArmMoveCommand(m_Arm, Constants.ArmConstants.kConeMid))
     ); // Cone Mid

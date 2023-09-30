@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.commands.IntakeCommand;
 
 public class Intake extends SubsystemBase {
     // WPI_TalonSRX m_IntakeTalonSRX;
@@ -50,7 +51,7 @@ public class Intake extends SubsystemBase {
         return m_IntakeSparkMax.getMotorTemperature();
     }
 
-    public Command intakeCommand(double speed) {
-        return Commands.runOnce(() -> setSpeed(speed), this);
+    public Command intakeCommand(int currentLimit, double speed) {
+        return new IntakeCommand(this, currentLimit, speed);
     }
 }

@@ -21,10 +21,10 @@ public class TestPath extends SequentialCommandGroup {
     
     public TestPath(SwerveAutoBuilder autoBuilder, DriveSubsystem swerve, Arm arm, Elevator elevator, Intake intake) {
         List<PathPlannerTrajectory> pathGroup = PathPlanner.loadPathGroup(
-            "3 Piece Smooth", new PathConstraints(1, 3));
+            "Test Path", new PathConstraints(1, 0.6));
         
         addCommands(
-            autoBuilder.followPathGroup(pathGroup)
+            autoBuilder.fullAuto(pathGroup)
         );
     }
 
