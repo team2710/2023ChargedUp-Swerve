@@ -93,6 +93,10 @@ public class DriveSubsystem extends SubsystemBase {
     return m_odometry.getPoseMeters();
   }
 
+  public AHRS getGyro() {
+    return m_gyro;
+  }
+
   /**
    * Resets the odometry to the specified pose.
    *
@@ -108,6 +112,17 @@ public class DriveSubsystem extends SubsystemBase {
             m_rearRight.getPosition()
         },
         pose);
+  }
+
+  // For balance auto
+  public void forwardDrive(double speed) {
+    var swerveModuleStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(
+      new ChassisSpeeds(speed, 0, 0)
+    );
+    m_frontLeft.setDesiredState(swerveModuleStates[0]);
+    m_frontRight.setDesiredState(swerveModuleStates[1]);
+    m_rearLeft.setDesiredState(swerveModuleStates[2]);
+    m_rearRight.setDesiredState(swerveModuleStates[3]);
   }
 
   /**

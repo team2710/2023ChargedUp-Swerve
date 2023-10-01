@@ -22,13 +22,17 @@ import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.ElevatorConstants;
 import frc.robot.Constants.OIConstants;
+import frc.robot.commands.ArmCommand;
 import frc.robot.commands.ArmMoveCommand;
 import frc.robot.commands.ElevatorMoveCommand;
 import frc.robot.commands.IntakeCommand;
 import frc.robot.commands.ShiftCommand;
 import frc.robot.commands.ZeroArm;
+import frc.robot.commands.Auto.Auto2PieceSmoothBalance;
 import frc.robot.commands.Auto.Auto3PieceSmooth;
+import frc.robot.commands.Auto.AutoBalanceSwerve;
 import frc.robot.commands.Auto.TestPath;
+import frc.robot.commands.Auto.AutoBalanceSwerve.RobotDirectionToStation;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.Elevator;
@@ -85,8 +89,6 @@ public class RobotContainer {
 
   boolean controlShifted = false;
 
-  final List<PathPlannerTrajectory> m_auto3pieceSmooth = PathPlanner.loadPathGroup("3 Piece Smooth", new PathConstraints(4.8, 5));
-
   final HashMap<String, Command> eventMap = new HashMap<>(){{
     put("ground_intake", 
       Commands.sequence(
@@ -100,6 +102,23 @@ public class RobotContainer {
         m_Intake.intakeCommand(5, ArmConstants.kIntakeHold)
       )
     );
+
+    put("cube_mid",
+      Commands.sequence(
+        m_Elevator.moveCommand(ElevatorConstants.kCubeMid),
+        m_Arm.moveCommand(ArmConstants.kCubeMid),
+        Commands.waitSeconds(1),
+        m_Intake.intakeCommand(25, ArmConstants.kIntake),
+        Commands.waitSeconds(0.25),
+        m_Intake.intakeCommand(0, 0),
+        m_Elevator.moveCommand(0),
+        m_Arm.moveCommand(0)
+      )
+    );
+
+    put("auto_balance_away", new AutoBalanceSwerve(m_robotDrive, RobotDirectionToStation.AWAY));
+
+    put("auto_balance_toward", new AutoBalanceSwerve(m_robotDrive, RobotDirectionToStation.TOWARD));
 
     put("cone_outtake",
       Commands.sequence(
@@ -192,8 +211,16 @@ public class RobotContainer {
    *
    * @return the command to run in autonomous
    */
-  public Command getAutonomousCommand() {
-    // return new Auto3PieceSmooth(m_autoBuilder, m_robotDrive, m_Arm, m_Elevator, m_Intake);
-    return new TestPath(m_autoBuilder, m_robotDrive, m_Arm, m_Elevator, m_Intake);
+  public Command getAutonomousCommand(String selectedAuto) {
+    switch (selectedAuto) {
+      case "2 Piece Smooth + Balance":
+        return new Auto2PieceSmoothBalance(m_autoBuilder);
+      case "3 Piece Smooth":
+        return new Auto3PieceSmooth(m_autoBuilder);
+      case "Test Path":
+        return new TestPath(m_autoBuilder);
+      default:
+        return new Auto2PieceSmoothBalance(m_autoBuilder);
+    }
   }
 }

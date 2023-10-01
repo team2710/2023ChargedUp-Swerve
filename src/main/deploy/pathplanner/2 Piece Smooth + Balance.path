@@ -16,10 +16,12 @@
       "isLocked": false,
       "isStopPoint": false,
       "stopEvent": {
-        "names": [],
-        "executionBehavior": "parallel",
-        "waitBehavior": "none",
-        "waitTime": 0
+        "names": [
+          "cube_mid"
+        ],
+        "executionBehavior": "sequential",
+        "waitBehavior": "after",
+        "waitTime": 2.0
       }
     },
     {
@@ -91,10 +93,12 @@
       "isLocked": false,
       "isStopPoint": true,
       "stopEvent": {
-        "names": [],
-        "executionBehavior": "parallel",
-        "waitBehavior": "none",
-        "waitTime": 0
+        "names": [
+          "intake_hold"
+        ],
+        "executionBehavior": "sequential",
+        "waitBehavior": "after",
+        "waitTime": 0.25
       }
     },
     {
@@ -141,10 +145,12 @@
       "isLocked": false,
       "isStopPoint": true,
       "stopEvent": {
-        "names": [],
+        "names": [
+          "cone_mid"
+        ],
         "executionBehavior": "parallel",
-        "waitBehavior": "none",
-        "waitTime": 0
+        "waitBehavior": "after",
+        "waitTime": 3.0
       }
     },
     {
@@ -189,22 +195,24 @@
       "isReversal": true,
       "velOverride": null,
       "isLocked": false,
-      "isStopPoint": false,
+      "isStopPoint": true,
       "stopEvent": {
-        "names": [],
-        "executionBehavior": "parallel",
-        "waitBehavior": "none",
-        "waitTime": 0
+        "names": [
+          "intake_hold"
+        ],
+        "executionBehavior": "sequential",
+        "waitBehavior": "after",
+        "waitTime": 0.25
       }
     },
     {
       "anchorPoint": {
-        "x": 5.2555961522179455,
-        "y": 2.7862770255455045
+        "x": 5.3812070017302425,
+        "y": 2.8319536980954307
       },
       "prevControl": {
-        "x": 6.363255461553659,
-        "y": 2.763438689270541
+        "x": 6.488866311065956,
+        "y": 2.809115361820467
       },
       "nextControl": null,
       "holonomicAngle": 0,
@@ -213,7 +221,9 @@
       "isLocked": false,
       "isStopPoint": false,
       "stopEvent": {
-        "names": [],
+        "names": [
+          "auto_balance_away"
+        ],
         "executionBehavior": "parallel",
         "waitBehavior": "none",
         "waitTime": 0
@@ -223,5 +233,18 @@
   "maxVelocity": 4.8,
   "maxAcceleration": 5.0,
   "isReversed": null,
-  "markers": []
+  "markers": [
+    {
+      "position": 1.629090909091029,
+      "names": [
+        "ground_intake"
+      ]
+    },
+    {
+      "position": 6.5163636363636765,
+      "names": [
+        "ground_intake"
+      ]
+    }
+  ]
 }
