@@ -34,7 +34,8 @@ public final class Constants {
     public static final int kLeftSparkmax = 31;
     public static final int kRightSparkmax = 30;
     public static final double kElevatorMax = 12.75;
-    public static final double kConeMid = 7.75;
+    public static final double kConeMid = 6.25;
+    public static final double kConeDoubleSub = 7.75;
     public static final double kCubeMid = 9.75;
     public static final double kCubeDoubleSub = 9.75;
   }
@@ -44,14 +45,14 @@ public final class Constants {
     // public static final int kIntakeTalonSRX = 10;
     public static final int kIntakeSparkmax = 5;
     public static final double kIntakeHold = 0.07;
-    public static final double kIntake = 0.5;
+    public static final double kIntake = 0.75;
     public static final double kOuttake = -0.75;
     public static final double kStartingAngle = 15; // degrees
     public static final double kMaxIntakeMotorTemperature = 32;
-    public static final double kArmMax = 5250;
+    public static final double kArmMax = 5350;
     public static final double kCubeMid = 4500;
     public static final double kConeMid = 4500;
-    public static final double kGroundIntake = 1550;
+    public static final double kGroundIntake = 1400;
     public static final double kHybridCone = 2500;
   }
 

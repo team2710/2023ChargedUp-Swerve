@@ -34,9 +34,12 @@ public class Robot extends TimedRobot {
     m_robotContainer = new RobotContainer();
 
     // Auto Options
-    autoChooser.setDefaultOption("2 Piece Smooth + Balance", "2 Piece Smooth + Balance");
-    autoChooser.addOption("3 Piece Smooth", "3 Piece Smooth");
+    autoChooser.setDefaultOption("Auto Cube Taxi Smooth", "Auto Cube Taxi Smooth");
+    autoChooser.addOption("Auto Cube Taxi Bump", "Auto Cube Taxi Bump");
+    autoChooser.addOption("Auto Cube Balance", "Auto Cube Balance");
+    autoChooser.addOption("Auto Cube Taxi Balance", "Auto Cube Taxi Balance");
     autoChooser.addOption("Test Path", "Test Path");
+    autoChooser.addOption("Balance Test", "Balance Test");
 
     SmartDashboard.putData(autoChooser);
   }

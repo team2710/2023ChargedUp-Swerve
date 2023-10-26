@@ -28,18 +28,23 @@ import frc.robot.commands.ElevatorMoveCommand;
 import frc.robot.commands.IntakeCommand;
 import frc.robot.commands.ShiftCommand;
 import frc.robot.commands.ZeroArm;
-import frc.robot.commands.Auto.Auto2PieceSmoothBalance;
+import frc.robot.commands.Auto.AutoCubeTaxi;
+import frc.robot.commands.Auto.AutoCubeTaxiBalance;
 import frc.robot.commands.Auto.Auto3PieceSmooth;
 import frc.robot.commands.Auto.AutoBalanceSwerve;
+import frc.robot.commands.Auto.AutoCubeTaxi;
 import frc.robot.commands.Auto.TestPath;
 import frc.robot.commands.Auto.AutoBalanceSwerve.RobotDirectionToStation;
+import frc.robot.commands.Auto.AutoCubeTaxi.Side;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.Intake;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandPS4Controller;
@@ -82,6 +87,7 @@ public class RobotContainer {
   final Trigger auxDPADU = m_AuxController.povUp(); // Elevator High
   final Trigger auxDPADD = m_AuxController.povDown(); // Ground Pickup/Hybrid
   final Trigger auxDPADR = m_AuxController.povRight(); // Hybrid Cone
+  final Trigger auxDPADL = m_AuxController.povLeft(); // Mid Cone
 
   // Driver Controller Triggers
   final Trigger driveCross = m_driverController.cross();
@@ -138,6 +144,19 @@ public class RobotContainer {
         m_Arm.moveCommand(0)
       )
     );
+
+    put("cone_high",
+      Commands.sequence(
+        m_Elevator.moveCommand(ElevatorConstants.kElevatorMax),
+        m_Arm.moveCommand(ArmConstants.kArmMax),
+        Commands.waitSeconds(2),
+        m_Intake.intakeCommand(25, ArmConstants.kOuttake),
+        Commands.waitSeconds(1),
+        m_Intake.intakeCommand(0, 0),
+        m_Elevator.moveCommand(0),
+        m_Arm.moveCommand(0)
+      )
+    );
   }};
 
   final SwerveAutoBuilder m_autoBuilder = new SwerveAutoBuilder(
@@ -164,8 +183,8 @@ public class RobotContainer {
         // Turning is controlled by the X axis of the right stick.
         new RunCommand(
             () -> m_robotDrive.drive(
-                -MathUtil.applyDeadband(m_driverController.getLeftY(), OIConstants.kDriveDeadband),
-                -MathUtil.applyDeadband(m_driverController.getLeftX(), OIConstants.kDriveDeadband),
+                MathUtil.applyDeadband(m_driverController.getLeftY(), OIConstants.kDriveDeadband),
+                MathUtil.applyDeadband(m_driverController.getLeftX(), OIConstants.kDriveDeadband),
                 -MathUtil.applyDeadband(m_driverController.getRightX(), OIConstants.kDriveDeadband),
                 true, true),
             m_robotDrive));
@@ -187,7 +206,7 @@ public class RobotContainer {
    */
   private void configureButtonBindings() { // controls
     // Zero swerve
-    driveCross.onTrue(new RunCommand(() -> m_robotDrive.zeroHeading(), m_robotDrive));
+    driveCross.onTrue(new InstantCommand(() -> m_robotDrive.zeroHeading(), m_robotDrive));
     driveDPADD.onTrue(new ZeroArm(m_Arm));
 
     auxDPADD.onTrue(new ArmMoveCommand(m_Arm, Constants.ArmConstants.kGroundIntake)); // Ground Pickup
@@ -200,10 +219,12 @@ public class RobotContainer {
 
     auxDPADU.onTrue(new ElevatorMoveCommand(m_Elevator, Constants.ElevatorConstants.kElevatorMax).alongWith(new ArmMoveCommand(m_Arm, Constants.ArmConstants.kArmMax))); // 
     auxDPADR.onTrue(new ArmMoveCommand(m_Arm, ArmConstants.kHybridCone));
+    auxDPADL.onTrue(new ElevatorMoveCommand(m_Elevator, Constants.ElevatorConstants.kConeMid).alongWith(new ArmMoveCommand(m_Arm, Constants.ArmConstants.kConeMid))
+    );
 
     auxR1.onTrue(new ElevatorMoveCommand(m_Elevator, Constants.ElevatorConstants.kConeMid).alongWith(new ArmMoveCommand(m_Arm, Constants.ArmConstants.kConeMid))
     ); // Cone Mid
-    auxR2.onTrue(new ElevatorMoveCommand(m_Elevator, Constants.ElevatorConstants.kCubeMid).alongWith(new ArmMoveCommand(m_Arm, Constants.ArmConstants.kArmMax))); // Cube Mid
+    auxR2.onTrue(new ElevatorMoveCommand(m_Elevator, Constants.ElevatorConstants.kConeDoubleSub).alongWith(new ArmMoveCommand(m_Arm, Constants.ArmConstants.kArmMax))); // Cube Mid
   }
 
   /**
@@ -213,14 +234,30 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand(String selectedAuto) {
     switch (selectedAuto) {
-      case "2 Piece Smooth + Balance":
-        return new Auto2PieceSmoothBalance(m_autoBuilder);
-      case "3 Piece Smooth":
-        return new Auto3PieceSmooth(m_autoBuilder);
+      case "Auto Cube Taxi Smooth":
+        return new AutoCubeTaxi(m_autoBuilder, Side.SMOOTH);
+      case "Auto Cube Taxi Bump":
+        return new AutoCubeTaxi(m_autoBuilder, Side.BUMP);
+      case "Auto Cube Balance":
+        return Commands.sequence(
+          m_Elevator.moveCommand(ElevatorConstants.kCubeMid),
+          m_Arm.moveCommand(ArmConstants.kCubeMid),
+          Commands.waitSeconds(1),
+          m_Intake.intakeCommand(25, ArmConstants.kIntake),
+          Commands.waitSeconds(0.25),
+          m_Intake.intakeCommand(0, 0),
+          m_Elevator.moveCommand(0),
+          m_Arm.moveCommand(0),
+          new AutoBalanceSwerve(m_robotDrive, RobotDirectionToStation.AWAY)
+        );
+      case "Auto Cube Taxi Balance":
+        return new AutoCubeTaxiBalance(m_autoBuilder);
       case "Test Path":
         return new TestPath(m_autoBuilder);
+      case "Balance Test":
+        return new AutoBalanceSwerve(m_robotDrive, RobotDirectionToStation.AWAY);
       default:
-        return new Auto2PieceSmoothBalance(m_autoBuilder);
+        return new AutoCubeTaxi(m_autoBuilder, Side.SMOOTH);
     }
   }
 }
