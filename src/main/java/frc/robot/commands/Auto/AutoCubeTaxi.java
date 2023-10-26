@@ -21,7 +21,7 @@ public class AutoCubeTaxi extends SequentialCommandGroup {
     }
 
     public AutoCubeTaxi(SwerveAutoBuilder autoBuilder, Side side) {
-        List<PathPlannerTrajectory> pathGroup = PathPlanner.loadPathGroup(
+        PathPlannerTrajectory pathGroup = PathPlanner.loadPath(
             "Cube + Taxi " + (side == Side.SMOOTH ? "Smooth" : "Bump"), new PathConstraints(2, 3));
 
         addCommands(

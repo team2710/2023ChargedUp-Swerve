@@ -92,6 +92,7 @@ public class RobotContainer {
   // Driver Controller Triggers
   final Trigger driveCross = m_driverController.cross();
   final Trigger driveDPADD = m_driverController.povDown();
+  final Trigger driveR2 = m_driverController.R2();
 
   boolean controlShifted = false;
 
@@ -208,6 +209,7 @@ public class RobotContainer {
     // Zero swerve
     driveCross.onTrue(new InstantCommand(() -> m_robotDrive.zeroHeading(), m_robotDrive));
     driveDPADD.onTrue(new ZeroArm(m_Arm));
+    driveR2.onTrue(new InstantCommand(() -> m_robotDrive.setX()));
 
     auxDPADD.onTrue(new ArmMoveCommand(m_Arm, Constants.ArmConstants.kGroundIntake)); // Ground Pickup
     auxL2.onTrue(new ElevatorMoveCommand(m_Elevator, 0) // Elevator Down
