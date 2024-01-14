@@ -21,7 +21,7 @@ public class AutoCubeTaxiBalance extends SequentialCommandGroup {
     
     public AutoCubeTaxiBalance(SwerveAutoBuilder autoBuilder) {
         List<PathPlannerTrajectory> pathGroup = PathPlanner.loadPathGroup(
-            "Cube + Taxi + Balance", new PathConstraints(2, 3));
+            "Cube + Taxi + Balance", new PathConstraints(1, 3));
 
         addCommands(autoBuilder.fullAuto(pathGroup));
     }

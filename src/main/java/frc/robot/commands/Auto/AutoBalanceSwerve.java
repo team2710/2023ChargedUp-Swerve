@@ -14,24 +14,30 @@ public class AutoBalanceSwerve extends SequentialCommandGroup {
     }
 
     boolean isBalancing = false;
+    boolean isCharging = false;
+    RobotDirectionToStation directionToStation;
 
     public AutoBalanceSwerve(DriveSubsystem driveSubsystem, RobotDirectionToStation robotDirectionToStation) {
         double multiplier = (robotDirectionToStation == RobotDirectionToStation.AWAY ? -1 : 1);
-        double initialSpeed = 1.5 * multiplier;
+        double initialSpeed = 1 * multiplier;
         double reverseSpeed = 0.7 * multiplier;
         
         addCommands(
             new InstantCommand(() -> {
                 driveSubsystem.forwardDrive(initialSpeed);
             }), new RunCommand(() -> {
-                SmartDashboard.putNumber("Gyro", driveSubsystem.getGyro().getRoll());
-                if (driveSubsystem.getGyro().getRoll() > 5) {
-                    driveSubsystem.forwardDrive(1.5 * multiplier);
+                // if ((multiplier == -1 ? (driveSubsystem.getGyro().getRoll() > 3) : driveSubsystem.getGyro().getRoll() < -3) && !isCharging) {
+                //     driveSubsystem.forwardDrive(0.1 * multiplier);
+                //     isBalancing = true;
+                // } else if (isBalancing) {
+                //     driveSubsystem.forwardDrive(0);
+                // }
+                if (driveSubsystem.getGyro().getRoll() < -8) {
                     isBalancing = true;
-                } else if (driveSubsystem.getGyro().getRoll() < -7) {
-                    driveSubsystem.forwardDrive(-0.5 * multiplier);
+                    driveSubsystem.forwardDrive(0.5);
                 } else if (isBalancing) {
                     driveSubsystem.forwardDrive(0);
+                    driveSubsystem.setX();
                 }
             }, driveSubsystem)
         );

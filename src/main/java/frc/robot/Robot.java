@@ -35,11 +35,12 @@ public class Robot extends TimedRobot {
 
     // Auto Options
     autoChooser.setDefaultOption("Auto Cube Taxi Smooth", "Auto Cube Taxi Smooth");
-    autoChooser.addOption("Auto Cube Taxi Bump", "Auto Cube Taxi Bump");
-    autoChooser.addOption("Auto Cube Balance", "Auto Cube Balance");
+    // autoChooser.addOption("Auto Cube Taxi Bump", "Auto Cube Taxi Bump");
+    // autoChooser.addOption("Auto Cube Balance", "Auto Cube Balance");
+    autoChooser.addOption("Auto Cube + 2 Piece", "Auto Cube + 2 Piece");
     autoChooser.addOption("Auto Cube Taxi Balance", "Auto Cube Taxi Balance");
-    autoChooser.addOption("Test Path", "Test Path");
-    autoChooser.addOption("Balance Test", "Balance Test");
+    // autoChooser.addOption("Test Path", "Test Path");
+    // autoChooser.addOption("Balance Test", "Balance Test");
 
     SmartDashboard.putData(autoChooser);
   }

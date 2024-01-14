@@ -84,10 +84,12 @@ public class RobotContainer {
   final Trigger auxL2 = m_AuxController.L2(); // Elevator Down
   final Trigger auxSquare = m_AuxController.square(); // Cone Outtake
   final Trigger auxTriangle = m_AuxController.triangle(); // Cone Intake
+  final Trigger auxCross = m_AuxController.cross(); // Cone Shootttt
   final Trigger auxDPADU = m_AuxController.povUp(); // Elevator High
   final Trigger auxDPADD = m_AuxController.povDown(); // Ground Pickup/Hybrid
   final Trigger auxDPADR = m_AuxController.povRight(); // Hybrid Cone
   final Trigger auxDPADL = m_AuxController.povLeft(); // Mid Cone
+  final Trigger auxCircle = m_AuxController.circle(); // Hybrid Cube
 
   // Driver Controller Triggers
   final Trigger driveCross = m_driverController.cross();
@@ -100,7 +102,7 @@ public class RobotContainer {
     put("ground_intake", 
       Commands.sequence(
         m_Arm.moveCommand(ArmConstants.kGroundIntake),
-        m_Intake.intakeCommand(25, ArmConstants.kIntake)
+        m_Intake.intakeCommand(25, 1)
       )
     );
 
@@ -129,7 +131,9 @@ public class RobotContainer {
 
     put("cone_outtake",
       Commands.sequence(
-        m_Intake.intakeCommand(5, ArmConstants.kIntakeHold)
+        m_Intake.intakeCommand(5, ArmConstants.kIntakeHold),
+        Commands.waitSeconds(1),
+        m_Elevator.moveCommand(0)
       )
     );
 
@@ -143,6 +147,13 @@ public class RobotContainer {
         m_Intake.intakeCommand(0, 0),
         m_Elevator.moveCommand(0),
         m_Arm.moveCommand(0)
+      )
+    );
+
+    put("move_cone_mid",
+      Commands.sequence(
+        m_Elevator.moveCommand(ElevatorConstants.kConeMid),
+        m_Arm.moveCommand(ArmConstants.kConeMid)
       )
     );
 
@@ -165,7 +176,7 @@ public class RobotContainer {
       m_robotDrive::resetOdometry,
       DriveConstants.kDriveKinematics,
       new PIDConstants(5.0, 0.0, 0.0),
-      new PIDConstants(0.5, 0, 0),
+      new PIDConstants(0.5, 0, 0.9),
       m_robotDrive::setModuleStates,
       eventMap,
       true,
@@ -218,6 +229,8 @@ public class RobotContainer {
 
     auxTriangle.onTrue(new IntakeCommand(m_Intake, 25, Constants.ArmConstants.kIntake)).onFalse(new IntakeCommand(m_Intake, 5, Constants.ArmConstants.kIntakeHold)); // Cone Intake
     auxSquare.onTrue(new IntakeCommand(m_Intake, 25, Constants.ArmConstants.kOuttake)).onFalse(new IntakeCommand(m_Intake, 0, 0)); // Cone Outtake
+    auxCross.onTrue(new IntakeCommand(m_Intake, 25, -1)).onFalse(new IntakeCommand(m_Intake, 0, 0));
+    auxCircle.onTrue(new ArmMoveCommand(m_Arm, Constants.ArmConstants.kCubeMid));
 
     auxDPADU.onTrue(new ElevatorMoveCommand(m_Elevator, Constants.ElevatorConstants.kElevatorMax).alongWith(new ArmMoveCommand(m_Arm, Constants.ArmConstants.kArmMax))); // 
     auxDPADR.onTrue(new ArmMoveCommand(m_Arm, ArmConstants.kHybridCone));
@@ -257,7 +270,9 @@ public class RobotContainer {
       case "Test Path":
         return new TestPath(m_autoBuilder);
       case "Balance Test":
-        return new AutoBalanceSwerve(m_robotDrive, RobotDirectionToStation.AWAY);
+        return new AutoBalanceSwerve(m_robotDrive, RobotDirectionToStation.TOWARD);
+      case "Auto Cube + 2 Piece":
+        return m_autoBuilder.fullAuto(PathPlanner.loadPath("Cube + 2 Piece Smooth Vit Red", new PathConstraints(1.5, 3)));
       default:
         return new AutoCubeTaxi(m_autoBuilder, Side.SMOOTH);
     }
